@@ -37,7 +37,12 @@ end
 
 %% prepare Parameters
 Fs=varargin{1};
-cd( varargin{2})
+persistent x_variable;
+if isempty(x_variable)
+    cd ( varargin{2})
+    x_variable = 0;
+end
+%cd ( varargin{2}) 
 praat_script=varargin{3};
 pitchAnalysis=varargin{4};
 fo_step=varargin{5};
@@ -81,7 +86,8 @@ data(data == -1) = -32767/32768; %make anythint that is 1 to just less than 1
 audiowrite([tmppraatwav '.wav'], data, Fs);
 
 %% analysis
-commstring = ['praatcon ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
+
+commstring = ['./praat_barren ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
     num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
     num2str(pitchAccuracy) ' ' num2str(pitchSilenceThrsh) ' '  num2str(pitchVoiceThrsh) ' ' ...
     num2str(pitchOctCost) ' ' num2str(pitchOctJumpCost) ' '  num2str(pitchVoiceUnvoiceCost) ' ' ...
@@ -105,4 +111,5 @@ else
     t  = NaN;
     F0 = NaN;
 end
+
 cd(cd0)

@@ -17,11 +17,11 @@ tmppraatwav=['1avqi-' uniqID '-' tmppraatwav '-' ];
 
 Fs=varargin{1};
 praat_script=varargin{2};
-code= ( varargin{3});
+code= (varargin{3});
 foS_lower=varargin{4};
 foS_upper=varargin{5};
 
-cd( code)
+%cd('./')
 
 %% prepare for analysis, write out temporary wave file
 
@@ -51,7 +51,7 @@ if s == -1
     outavqi.tilt = NaN;
     outavqi.avqi = NaN;
 else
-    datatemp = importdata([code '/' tmppraatwav '.txt ']);
+    datatemp = importdata([ code '/' tmppraatwav '.txt ']);
     outavqi.cpps = datatemp(1);
     outavqi.hnr = datatemp(2);
     outavqi.shim = datatemp(3);

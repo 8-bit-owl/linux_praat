@@ -11,7 +11,7 @@ defaultFs = 44100; % Hz
 
 % Check input:
 if nargin<1,
-   rootPath = '.\'; % current directory, including trailing '\'
+   rootPath = './'; % current directory, including trailing '\'
 end;
 
 % Prompt for file/files to process:

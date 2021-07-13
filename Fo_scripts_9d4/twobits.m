@@ -1,5 +1,8 @@
 files = ['V:\Offsite Data Collection\Lakeshore Data\exp2 preped\to run 44100\est'];
-code = ['V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts'];
+%code = ['V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts'];
+%code = ['V:/1 General Analysis And Techniques/Matlab Universal Scripts/Fo_scripts'];
+%code = ['/mnt/ufs18/home-070/ganjaisa/Acoustics/new_praat/Git_Praat']
+code = ['./']
 addpath(code)
 cd(files) 
 filename = FilenamesByExt('wav');

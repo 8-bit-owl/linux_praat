@@ -23,7 +23,7 @@ function [perturb] = praat_voiceGen3(data, varargin)
 cd0=cd;     %keep track of original folder
 
 %% get & make a file name
-tmp=strrep(cd,'/','.');
+tmp=strrep(cd,'.','/')
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav0=tmp(3:end); clear tmp
