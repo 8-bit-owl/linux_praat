@@ -27,7 +27,9 @@ function [t, F0] = praat_pitchGen3(data, varargin)
 cd0=cd;     %keep track of original folder
 
 %% get & make a file name
-tmp=strrep(cd,'/','.');
+if isunix == 1; tmp=strrep(cd,'/','.');
+elseif ispc == 1;  tmp=strrep(cd,'\','.');
+end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav0=tmp(3:end);
@@ -37,10 +39,14 @@ end
 
 %% prepare Parameters
 Fs=varargin{1};
-persistent x_variable;
-if isempty(x_variable)
+if isunix == 1
+	persistent x_variable;
+	if isempty(x_variable)
     cd ( varargin{2})
     x_variable = 0;
+	end
+elseif ispc == 1
+	cd ( varargin{2})
 end
 %cd ( varargin{2}) 
 praat_script=varargin{3};
@@ -87,11 +93,21 @@ audiowrite([tmppraatwav '.wav'], data, Fs);
 
 %% analysis
 
-commstring = ['./praat_barren ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
+if isunix == 1
+    commstring = ['./praat_barren ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
     num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
     num2str(pitchAccuracy) ' ' num2str(pitchSilenceThrsh) ' '  num2str(pitchVoiceThrsh) ' ' ...
     num2str(pitchOctCost) ' ' num2str(pitchOctJumpCost) ' '  num2str(pitchVoiceUnvoiceCost) ' ' ...
     num2str(fo_step) ' ' pitchAnalysis];
+elseif ispc == 1 
+    commstring = ['praatcon ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
+    num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
+    num2str(pitchAccuracy) ' ' num2str(pitchSilenceThrsh) ' '  num2str(pitchVoiceThrsh) ' ' ...
+    num2str(pitchOctCost) ' ' num2str(pitchOctJumpCost) ' '  num2str(pitchVoiceUnvoiceCost) ' ' ...
+    num2str(fo_step) ' ' pitchAnalysis];
+end
+
+    
 
 %     commstring = 'praatcon_win98 praat_pitch.psc praat.wav';
 [s, w] = system(commstring,'-echo');

@@ -31,7 +31,9 @@ fo_upper=varargin{5};
 analysistype=varargin{6};
 VoiceThresh=varargin{7};
 % get make a file name
-tmp=strrep(cd,'/','.');
+if isunix == 1; tmp=strrep(cd,'/','.');
+elseif ispc == 1; tmp=strrep(cd,'\','.');
+end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav=tmp(3:end); clear tmp

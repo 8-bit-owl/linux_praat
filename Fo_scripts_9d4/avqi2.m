@@ -7,7 +7,9 @@ end
 avqiwav2 = [concatsig;svsig];
 audiowrite('avqi2.wav',avqiwav2,fs)
 
-[s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+if isunix == 1; [s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+elseif ispc == 1; [s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+end
 datatemp = importdata('avqi2.txt');
 outavqi2.cpps = datatemp(1);
 outavqi2.hnr = datatemp(2);

@@ -5,7 +5,9 @@ function [outavqi] = praat_cpps3(siga,varargin)%Fs, praat_script, code)
 cd0=cd;     %keep track of original folder
 
 %% prepare filename
-tmp=strrep(cd,'/','.');
+if isunix == 1; tmp=strrep(cd,'/','.');
+elseif ispc == 1; tmp=strrep(cd,'\','.');
+end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav=tmp(3:end);
@@ -21,6 +23,8 @@ code= (varargin{3});
 foS_lower=varargin{4};
 foS_upper=varargin{5};
 
+if ispc == 1; cd( code)
+end
 %cd('./')
 
 %% prepare for analysis, write out temporary wave file
@@ -51,7 +55,9 @@ if s == -1
     outavqi.tilt = NaN;
     outavqi.avqi = NaN;
 else
-    datatemp = importdata([ code '/' tmppraatwav '.txt ']);
+    if isunix == 1; datatemp = importdata([ code '/' tmppraatwav '.txt ']);
+	elseif ispc == 1; datatemp = importdata([code '\' tmppraatwav '.txt ']);
+	end
     outavqi.cpps = datatemp(1);
     outavqi.hnr = datatemp(2);
     outavqi.shim = datatemp(3);

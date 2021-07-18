@@ -28,8 +28,9 @@ if (nargin == 2)
     data(data == 1) = 32767/32768;
     %     wavwrite(data, varargin{1}, 16, 'praat.wav');
     audiowrite('V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts\praat.wav',data, varargin{1},'BitsPerSample',16);
-    %     commstring = 'praatcon praat_pitchF.psc V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts\praat.wav';
-    commstring = './praat_barren praat_pitchF.psc V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts\praat.wav';
+    if ispc == 1; commstring = 'praatcon praat_pitchF.psc V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts\praat.wav';
+    elseif isunix == 1; commstring = './praat_barren praat_pitchF.psc V:\1 General Analysis And Techniques\Matlab Universal Scripts\Fo_scripts\praat.wav';
+	end
 	%     commstring = 'praatcon_win98 praat_pitchF.psc praat.wav';
     [s, w] = system(commstring);
     delete('V:\1 Software - Equipment - Techniques -Analysis\Matlab Universal Scripts\Fo_scripts\praat.wav');
@@ -40,8 +41,9 @@ elseif (nargin == 3)
     data(data == 1) = 32767/32768;
     %     wavwrite(data, varargin{1}, 16, 'praat.wav');
     audiowrite([varargin{2} '\praat.wav'],data, varargin{1});
-	commstring = './praat_barren praat_pitchF.psc praat.wav';
-    %     commstring = 'praatcon praat_pitchF.psc praat.wav';
+	if isunix == 1; commstring = './praat_barren praat_pitchF.psc praat.wav';
+    elseif ispc == 1; commstring = 'praatcon praat_pitchF.psc praat.wav';
+	end
     %     commstring = 'praatcon_win98 praat_pitch.psc praat.wav';
     [s, w] = system(['cd ' varargin{2} ' & ' commstring]);
     delete([varargin{2} '\praat.wav']);

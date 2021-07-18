@@ -17,8 +17,9 @@ if dirName(1)==0, % user hit Cancel button or closed user interface
    output = []; % init empty output variable
    return;
 end;
-dirName = [dirName,'/']; % append '\' to end of directory name
-
+if isunix == 1; dirName = [dirName,'/']; % append '\' to end of directory name
+elseif ispc == 1; dirName = [dirName,'\']; % append '\' to end of directory name
+end
 % Set output file name:
 outputFile = [dirName,'HFCCmeasures.xls'];
 

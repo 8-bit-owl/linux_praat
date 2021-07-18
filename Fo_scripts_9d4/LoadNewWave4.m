@@ -24,7 +24,9 @@ N1 = floor(time_steps(1)*Fs)+1;
 N2 = floor(time_steps(2)*Fs);
 % [siga,Fs,nbits] = wavread(fname,[N1 N2-1]);
 if nargin == 4
-    [siga,Fs] = audioread([filesdirectory '/' fname],[N1 N2-1]);
+  if isunix == 1; [siga,Fs] = audioread([filesdirectory '/' fname],[N1 N2-1]);
+  elseif ispc == 1; [siga,Fs] = audioread([filesdirectory '\' fname],[N1 N2-1]);
+  end
 else
     [siga,Fs] = audioread(fname,[N1 N2-1]);
 end

@@ -91,12 +91,24 @@ s_gennum = 0; % 0: no gennum needed
 s_name = 0;  % 0: use default file output name
 % 1: will be prompted to name the output .xls file
 
+% Platform configure
+win = 1
+unix = 1
+global platform
+
+if isunix == 1
+	platform = unix
+elseif ispc == 1
+	platform = win
+end
+
+
 s_start = 1;  % if crash, put j_iter+1 here and continue running (F5), note bad file
 
 
 %% initialize USER EDITABLE
 u_ftitle = 'LTAS_vce2'; %'% name to put in documents, no spaces';
-u_avqi = 1;  % 0: do not run AVQI analysis
+u_avqi = 0;  % 0: do not run AVQI analysis
 % 1: run both AVQI analyses, be sure to change the AVQI settings below
 u_fftenvelope = 1; % 0 to skip, 1 to do the fft of the array or envelope to find features.
 u_trimYN = 2;         % 0 to analyze the files as they are
@@ -112,14 +124,14 @@ u_contour2xlsYN = 1;     % 1 to export the arrays to a spreadsheet (Fo, dB etc)
 % 0 does not.
 
 c_fryanaly = 0; % 0 everything is analyzed. 1 only modal voice is analyzed, 2 only fry is analyzed
-c_autofo = 1; % 0: means that just do the values set below
+c_autofo = 0; % 0: means that just do the values set below
 % 1: will do an auto find range for the file
 c_foS_low=70;   %lower bound for Fo (70-90 for males, 150 for females)
 c_foS_up=500;   %upper bound for Fo (350 for males, 800 for females)
 % fo_lower=35;    %lower bound for Fo (70-90 for males, 150 for females)
 % fo_upper=85;   %upper bound for Fo (350 for males, 800 for females)
-u_showfindFofig = 5; % 0 to not show the figure, 5 to show and save
-u_figson = 1;       % no monitoring figures =0
+u_showfindFofig = 0; % 0 to not show the figure, 5 to show and save
+u_figson = 0;       % no monitoring figures =0
 % monitoring each signal being loaded = 1
 % monitoring the output as it is calculated = 2
 % monitoring each signal and output as is calculated = 3
@@ -152,7 +164,11 @@ if s_dir == 0
 %    s_code = 'R:\OneDrive - Michigan State University\Current Work\1 test scripts\2019Mar script testing\Fo_scripts_8hd';    % local
 %    s_code = 'C:\Data\OneDrive - Michigan State University\Current Work\1 test scripts\2019Mar script testing\Fo_scripts_9';    % local
 %    s_code = 'C:\2Analyze\Fo_scripts_9d3';    % local
-   s_code = 'C:\Data2Analyze\1 Matlab analysis\Fo_scripts_9d4';  
+   if platform == unix
+   	s_code = './Fo_scripts_9d4';  
+   elseif platform == win
+   	s_code = 'Fo_scripts_9d4';
+   end	
    s_files = cd;
    addpath(s_code)
    
@@ -244,10 +260,14 @@ if s_name == 0
    end
    if c_fryanaly == 1; g_titlename= [g_titlename '-mod']; end
    if c_fryanaly == 2; g_titlename= [g_titlename '-fry']; end
-   g_outname = ['\',g_titlename,'_FullResults'];
+   if platform == unix; g_outname = ['/',g_titlename,'_FullResults']; 
+   elseif platform == win; g_outname = ['\',g_titlename,'_FullResults'];
+   end
 elseif s_name == 1
    tmp = inputdlg('Name of output file (without ''.xls'')');
-   g_outname = ['\' tmp{1}];
+   if platform == unix; g_outname = ['/' tmp{1}];
+   elseif platform == win; g_outname = ['\' tmp{1}];
+   end
 end
 clear tmp
 
@@ -274,7 +294,9 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
    g_fname=g_filename{g_iter}; % get the filename of the current file.
    fprintf('\n----- load %d of %d: %s -----',g_iter, g_cnt,g_fname)
    fprintf('\n%dof%d',g_iter, g_cnt)
-   tmp = audioinfo([s_files '\' g_fname]);
+   if platform == unix; tmp = audioinfo([s_files '/' g_fname]);
+   elseif platform == win; tmp = audioinfo([s_files '\' g_fname]);
+   end
    g_Fs = tmp.SampleRate;
    g_duration = tmp.Duration;
    g_chn = tmp.NumChannels;
@@ -403,7 +425,7 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
    else
       c_fryperc=0;
    end
- 
+   
    fprintf('=%.0f',toc-tmptoc)
    %_2_______________ Get Vocal Fry Areas  _____________
    
@@ -470,6 +492,7 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
 
    
    %% 1_______________ Estimate Pitch Range _____________
+   
    if c_autofo ==1
       tmptoc=toc; fprintf(',FoFnd')
       c_foS_lowi=c_foS_low;
@@ -495,11 +518,12 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
       c_foS_upi=c_foS_up;
       c_swapFo4Aud=NaN;
    end
-  
+   
    % 2_______________ Estimate Pitch Range _____________
  
    
    %% 1_______________ Estimate Pitch using PRAAT_____________
+   
    tmptoc=toc; fprintf(',PRT')
    try
       [f0_tm_prt, f0_fo_prt] = praat_pitchGen3(0.95*siga/max(abs(siga)),g_Fs,s_code,'praat_pitchGen3.psc',...
@@ -516,6 +540,7 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
       figure(3),subplot(3,1,2), plot(f0_tm_prt,f0_fo_prt,'.r'),hold on
    end
    fprintf('=%.0f',toc-tmptoc)
+   
    % 2_______________ Estimate Pitch using PRAAT_____________  
  
    
@@ -935,6 +960,7 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
    
    %% 1_______________ Jitter & Shimmer & Entropy measures at pitch intervals
    % description of some of the commands is here: http://www.fon.hum.uva.nl/praat/manual/Voice_2__Jitter.html
+   
    tmptoc=toc; fprintf('\n...%dof%d,pert',g_iter, g_cnt)
    tmp=0.95*sigaS/max(abs(sigaS)); c_jitter1=[];
    if length(tmp)>10
@@ -963,6 +989,7 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
       c_jitter1.shimmer_apq3=NaN;c_jitter1.shimmer_apq5=NaN;
       c_jitter1.shimmer_apq11=NaN;c_jitter1.shimmer_dda=NaN;
       c_jitter1.nhr=NaN;c_jitter1.hnr=NaN;
+      c_jitter1.jitter_ppq5 = NaN;
    end
    fprintf('=%.0f',toc-tmptoc)
    
@@ -1135,7 +1162,9 @@ for g_iter = s_start:g_cnt          %loop through all files in the directory
       saveas(gcf,[s_files '\_tif' g_titlename '_' g_fname '.tif'],'tiff')
    end
    if u_concatYN==2
-      tmp=[s_files '\' g_titlename '_reduced_' g_fname(1:end-4) '.wav'];
+      if platform == unix; tmp=[s_files '/' g_titlename '_reduced_' g_fname(1:end-4) '.wav'];
+	  elseif platform == win; tmp=[s_files '\' g_titlename '_reduced_' g_fname(1:end-4) '.wav'];
+	  end
       audiowrite(tmp,concat1.sigS ,g_Fs)
    end
    
@@ -1589,9 +1618,9 @@ disp(' --end-- Listing filenames in order of analysis for Excel')
 % workSheet = 'datanames';
 % g_outname=[g_outname '_' titlename];
 workSheet = 'data';
-xlswrite([s_files,g_outname,'.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
-xlswrite([s_files,g_outname,'.xlsx'],outdataN,workSheet,'B2');
-xlswrite([s_files,g_outname,'.xlsx'],g_filename,workSheet,'A2');
+%xlswrite([s_files,g_outname,'.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
+%xlswrite([s_files,g_outname,'.xlsx'],outdataN,workSheet,'B2');
+%xlswrite([s_files,g_outname,'.xlsx'],g_filename,workSheet,'A2');
 
 
 
@@ -1921,14 +1950,14 @@ if u_concatYN>0
    save([g_titlename '_concat2' '_mat.mat'],'concat2')
    
    if s_name == 0
-      workSheet = 'data';
-      xlswrite([s_files '\' g_titlename '_ConcatResults' '.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
-      xlswrite([s_files '\' g_titlename '_ConcatResults' '.xlsx'],g_filename,workSheet,'A3');
-      xlswrite([s_files '\' g_titlename '_ConcatResults' '.xlsx'],outdata,workSheet,'B2');
+      %workSheet = 'data';
+      %xlswrite([s_files '/' g_titlename '_ConcatResults' '.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
+      %xlswrite([s_files '/' g_titlename '_ConcatResults' '.xlsx'],g_filename,workSheet,'A3');
+      %xlswrite([s_files '/' g_titlename '_ConcatResults' '.xlsx'],outdata,workSheet,'B2');
    elseif s_name == 1
-      xlswrite([s_files '\' g_outname '_ConcatResults' '.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
-      xlswrite([s_files '\' g_outname '_ConcatResults' '.xlsx'],g_filename,workSheet,'A3');
-      xlswrite([s_files '\' g_outname '_ConcatResults' '.xlsx'],outdata,workSheet,'B2');
+      %xlswrite([s_files '/' g_outname '_ConcatResults' '.xlsx'],[{'Filenames'} cellstr(outdataD)'],workSheet,'A1');
+      %xlswrite([s_files '/' g_outname '_ConcatResults' '.xlsx'],g_filename,workSheet,'A3');
+      %xlswrite([s_files '/' g_outname '_ConcatResults' '.xlsx'],outdata,workSheet,'B2');
    end
    
    clear worksheet
@@ -1946,8 +1975,10 @@ if u_concatYN>0
          rngtmp,[1 1]*concat2.dBv_stats.mean+concat2.dBv_stats.std,'b--')      
       axis([0 max(concat1.i_t) 0.95*min(concat1.sig_dBi) 1.05*max(concat1.sig_dBi) ])
       ylabel('dB'),
-      tmp=strrep(cd,'_', ' ');tmp=strrep(tmp,'\','.');title(tmp,'FontSize',6)
-      text(0.5*max(concat1.i_t),0.95*max(concat1.sig_dBi),['|slopeVoic=' num2str(concat2.dBv_stats.slope(1))],'FontSize',6)
+      if platform == unix; tmp=strrep(cd,'_', ' ');tmp=strrep(tmp,'/','.');title(tmp,'FontSize',6)
+      elseif platform == win; tmp=strrep(cd,'_', ' ');tmp=strrep(tmp,'\','.');title(tmp,'FontSize',6)
+	  end
+	  text(0.5*max(concat1.i_t),0.95*max(concat1.sig_dBi),['|slopeVoic=' num2str(concat2.dBv_stats.slope(1))],'FontSize',6)
       text(0.5*max(concat1.i_t),0.80*max(concat1.sig_dBi),[':slopeAll=' num2str(concat2.dB_stats.slope(1))],'FontSize',6)
       
       figure(fig1),subplot(4,1,2),
@@ -2184,7 +2215,7 @@ tmpstatus=movefile([g_titlename '*_mat.mat'], tmpstr);
 if tmpstatus==0
    disp(' problem moving results.mat file(s) ')
 end
-tmpstatus=movefile([g_titlename '*.xlsx'], tmpstr);
+%tmpstatus=movefile([g_titlename '*.xlsx'], tmpstr);
 if tmpstatus==0
    disp(' problem moving results.xlsx file(s) ')
 end

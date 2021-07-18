@@ -2,7 +2,9 @@ function [outavqi] = praat_cpps(siga, Fs, fname, code, files)
 % function gets the cpps from pratt
 
 %% prepare filename
-tmp=strrep(cd,'/','.');
+if isunix == 1; tmp=strrep(cd,'/','.');
+elseif ispc == 1; tmp=strrep(cd,'\','.');
+end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav=tmp(3:end);
@@ -15,11 +17,15 @@ tmppraatwav=['1avqi---' uniqID '---' tmppraatwav '---' '.wav'];
 
 %% create file
 audiowrite(tmppraatwav,siga/max(abs(siga)),Fs)
-movefile([files '/' tmppraatwav],[code '/' tmppraatwav]);
-
+if isunix == 1; movefile([files '/' tmppraatwav],[code '/' tmppraatwav]);
+elseif ispc == 1; movefile([files '\' tmppraatwav],[code '\' tmppraatwav]);
+end
 %% cpps
+
 [s, w] =  system(['cd ' code ' & Praat.exe --run praat_avqi2.praat ' tmppraatwav]);
-delete([code '/' tmppraatwav])
+if isunix == 1; delete([code '/' tmppraatwav])
+elseif ispc == 1; delete([code '\' tmppraatwav])
+end
 
 
 %%

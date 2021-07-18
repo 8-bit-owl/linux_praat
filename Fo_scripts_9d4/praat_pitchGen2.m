@@ -35,7 +35,9 @@ function [t, F0] = praat_pitchGen2(data, varargin)
 cd0=cd;     %keep track of original folder
 
 %% prepare parameters
-tmp=strrep(cd,'/','.');
+if isunix == 1; tmp=strrep(cd,'/','.');
+elseif ispc == 1; tmp=strrep(cd,'\','.');
+end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
 tmppraatwav=tmp(3:end);

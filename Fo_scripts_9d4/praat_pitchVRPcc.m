@@ -31,7 +31,9 @@ if (nargin == 2)
 %     wavwrite(data, varargin{1}, 16, 'praat.wav');
     audiowrite('praat.wav',data, varargin{1});
 %    commstring = 'praatcon praat_pitchVRPcc.psc praat.wav';
-	commstring = './praat_barren praat_pitchVRPcc.psc praat.wav';
+	if isunix == 1; commstring = './praat_barren praat_pitchVRPcc.psc praat.wav';
+	elseif ispc == 1; commstring = 'praatcon praat_pitchVRPcc.psc praat.wav';
+	end
 %     commstring = 'praatcon_win98 praat_pitch.psc praat.wav';    
     [s, w] = system(commstring);
     delete('praat.wav');

@@ -2,7 +2,9 @@ function outsig = avqi3(insig,Fs)
 
 audiowrite('avqi2.wav',insig,Fs)
 
-[s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+if isunix == 1; [s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+elseif ispc == 1; [s w] = system('Praat.exe --run praat_avqi2.praat avqi2.wav');
+end
 datatemp = importdata('avqi2.txt');
 outsig.cpps = datatemp(1);
 outsig.hnr = datatemp(2);
