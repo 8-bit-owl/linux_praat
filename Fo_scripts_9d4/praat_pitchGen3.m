@@ -27,8 +27,10 @@ function [t, F0] = praat_pitchGen3(data, varargin)
 cd0=cd;     %keep track of original folder
 
 %% get & make a file name
-if isunix == 1; tmp=strrep(cd,'/','.');
-elseif ispc == 1;  tmp=strrep(cd,'\','.');
+if isunix == 1
+    tmp=strrep(cd,'/','.');
+elseif ispc == 1
+    tmp=strrep(cd,'\','.');
 end
 tmp=strrep(tmp,' ','_');
 tmp=strrep(tmp,'_','-');
@@ -39,16 +41,18 @@ end
 
 %% prepare Parameters
 Fs=varargin{1};
+
+cmpr_str = cd
+str_len = strlength(cd)
+disp(cmpr_str(str_len-16:str_len))
 if isunix == 1
-	persistent x_variable;
-	if isempty(x_variable)
-    cd ( varargin{2})
-    x_variable = 0;
-	end
+    if strcmp(cmpr_str(str_len-14:str_len), "/Fo_scripts_9d4") == 0
+        disp("coool")
+        cd (varargin{2})
+    end
 elseif ispc == 1
 	cd ( varargin{2})
 end
-%cd ( varargin{2}) 
 praat_script=varargin{3};
 pitchAnalysis=varargin{4};
 fo_step=varargin{5};
@@ -95,10 +99,10 @@ audiowrite([tmppraatwav '.wav'], data, Fs);
 
 if isunix == 1
     commstring = ['./praat_barren ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
-    num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
-    num2str(pitchAccuracy) ' ' num2str(pitchSilenceThrsh) ' '  num2str(pitchVoiceThrsh) ' ' ...
-    num2str(pitchOctCost) ' ' num2str(pitchOctJumpCost) ' '  num2str(pitchVoiceUnvoiceCost) ' ' ...
-    num2str(fo_step) ' ' pitchAnalysis];
+                    num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
+                    num2str(pitchAccuracy) ' ' num2str(pitchSilenceThrsh) ' '  num2str(pitchVoiceThrsh) ' ' ...
+                    num2str(pitchOctCost) ' ' num2str(pitchOctJumpCost) ' '  num2str(pitchVoiceUnvoiceCost) ' ' ...
+                    num2str(fo_step) ' ' pitchAnalysis];
 elseif ispc == 1 
     commstring = ['praatcon ' praat_script ' '  tmppraatwav '.wav ' tmppraatwav '.txt ' ...
     num2str(fo_lower) ' ' num2str(fo_upper) ' ' num2str(pitchNCand) ' ' ...
@@ -127,5 +131,6 @@ else
     t  = NaN;
     F0 = NaN;
 end
-
+disp("path at start of file-------------------------------------------------")
+disp(cd)
 cd(cd0)
