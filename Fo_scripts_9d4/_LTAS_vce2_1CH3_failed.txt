@@ -62,3 +62,11 @@ DM15_RBP0a.wav
 1fo-23020858259-dir-1.linux-praat-.wav
 1fo-17293053846-dir-1.linux-praat-.wav
 1fo-19438151690-dir-1.linux-praat-.wav
+DF03_RBP0a.wav
+DF07_RBP0a.wav
+DF03_RBP0a.wav
+DF07_RBP0a.wav
+DF03_RBP0a.wav
+DF07_RBP0a.wav
+DM15_RBP0a.wav
+DM20_RBP0a.wav

@@ -42,12 +42,10 @@ end
 %% prepare Parameters
 Fs=varargin{1};
 
-cmpr_str = cd
-str_len = strlength(cd)
-disp(cmpr_str(str_len-16:str_len))
+cmpr_str = cd;
+str_len = strlength(cd);
 if isunix == 1
     if strcmp(cmpr_str(str_len-14:str_len), "/Fo_scripts_9d4") == 0
-        disp("coool")
         cd (varargin{2})
     end
 elseif ispc == 1
@@ -131,6 +129,5 @@ else
     t  = NaN;
     F0 = NaN;
 end
-disp("path at start of file-------------------------------------------------")
-disp(cd)
+
 cd(cd0)
